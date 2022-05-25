@@ -9,6 +9,13 @@
     <button class="btn btn-danger" @onclick="ToastrError">Тест Toastr Ошибка</button>
 </div>
 
+<br/>
+
+<div class="row">
+    <button class="btn btn-success" @onclick="SweetAlertSuccess">Тест SweetAlert Успех</button>
+    <button class="btn btn-danger" @onclick="SweetAlertError">Тест SweetAlert Ошибка</button>
+</div>
+
 @code {
 
     private async Task ToastrSuccess()
@@ -21,5 +28,14 @@
         await _JsRuntime.ToastrError("При выполнении операции произошла ошибка");
     }
 
+    private async Task SweetAlertSuccess()
+    {
+        await _JsRuntime.InvokeVoidAsync("ShowSwal", "success", "Задача выполнена успешно");
+    }
+
+    private async Task SweetAlertError()
+    {
+        await _JsRuntime.InvokeVoidAsync("ShowSwal", "error", "Ошибка при выполнении задачи");
+    }
 
 }

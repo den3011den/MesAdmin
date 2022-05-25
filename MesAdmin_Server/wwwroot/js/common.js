@@ -6,3 +6,21 @@
         toastr.error(message, "Ошибка выполнения операции", { timeOut: 5000 });
     }
 }
+
+
+window.ShowSwal = (type, message) => {
+    if (type === "success") {
+        Swal.fire(
+            'Успешная операция!',
+            message,
+            'success'
+        )
+    }
+    if (type === "error") {
+        Swal.fire(
+            'Ошибка операции!',
+            message,
+            'error'
+        )
+    }
+}
