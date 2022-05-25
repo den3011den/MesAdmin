@@ -13,12 +13,12 @@
 
     private async Task ToastrSuccess()
     {
-        await _JsRuntime.InvokeVoidAsync("ShowToastr", "success", "Успех");
+        await _JsRuntime.ToastrSuccess("Операция выполнена успешно");
     }
 
     private async Task ToastrError()
     {
-        await _JsRuntime.InvokeVoidAsync("ShowToastr", "error", "Ошибка");
+        await _JsRuntime.ToastrError("При выполнении операции произошла ошибка");
     }
 
 
