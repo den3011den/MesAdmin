@@ -1,7 +1,25 @@
 ﻿@page "/RPM/ResourceManagement"
 
+@inject IJSRuntime _JsRuntime
+
 <h3>ResourceManagement</h3>
 
+<div class="row">
+    <button class="btn btn-success" @onclick="ToastrSuccess">Тест Toastr Успех</button>
+    <button class="btn btn-danger" @onclick="ToastrError">Тест Toastr Ошибка</button>
+</div>
+
 @code {
+
+    private async Task ToastrSuccess()
+    {
+        await _JsRuntime.InvokeVoidAsync("ShowToastr", "success", "Успех");
+    }
+
+    private async Task ToastrError()
+    {
+        await _JsRuntime.InvokeVoidAsync("ShowToastr", "error", "Ошибка");
+    }
+
 
 }
