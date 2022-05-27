@@ -13,12 +13,19 @@ namespace MesAdmin_DataAccess.Data.SOADB
     {
         [Key]
         public Guid EquipmentId { get; set; }
+
         public string? S95Id { get; set; }
+
         public string? Description { get; set; }
+
         public string? Type { get; set; }
+
         public long? Version { get; set; }
+
         public Guid? ParentEquipmentId { get; set; }
+        
         [ForeignKey("ParentEquipmentId")]
-        public Equipment? ParentEquipment { get; set; }
+        [NotMapped]
+        public virtual Equipment? ParentEquipment { get; set; }
     }
 }

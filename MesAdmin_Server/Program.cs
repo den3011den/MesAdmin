@@ -1,3 +1,5 @@
+using MesAdmin_Business.Repository;
+using MesAdmin_Business.Repository.IRepository;
 using MesAdmin_DataAccess.Data.RPMData;
 using MesAdmin_DataAccess.Data.SOADB;
 using Microsoft.AspNetCore.Components;
@@ -16,6 +18,11 @@ builder.Services.AddDbContext<SOADBApplicationDbContext>(options =>
 builder.Services.AddDbContext<RPMDataÀpplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("RPMDataConnection")));
+
+builder.Services.AddScoped<IProcessResourcesRepository, ProcessResourcesRepository>();
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
