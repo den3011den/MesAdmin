@@ -1,11 +1,21 @@
+using MesAdmin_DataAccess.Data.RPMData;
+using MesAdmin_DataAccess.Data.SOADB;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContext<SOADBApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SOADBConnection")));
+
+builder.Services.AddDbContext<RPMDataÀpplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("RPMDataConnection")));
 
 var app = builder.Build();
 
