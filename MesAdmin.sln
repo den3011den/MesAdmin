@@ -5,7 +5,13 @@ VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MesAdmin_Server", "MesAdmin_Server\MesAdmin_Server.csproj", "{E8E9DFC9-A17D-42BB-AE29-D6EDAAD8866B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MesAdmin_Models", "MesAdmin_Models\MesAdmin_Models.csproj", "{E246C678-A2F1-4E66-AFCE-7D24F3433F3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MesAdmin_Models", "MesAdmin_Models\MesAdmin_Models.csproj", "{E246C678-A2F1-4E66-AFCE-7D24F3433F3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MesAdmin_Business", "MesAdmin_Business\MesAdmin_Business.csproj", "{BE58DCAF-9E8A-4436-A6D3-35F07774C32E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MesAdmin_Common", "MesAdmin_Common\MesAdmin_Common.csproj", "{4F8CFDC2-21E3-47A8-AE2E-D39911E0B193}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MesAdmin_DataAccess", "MesAdmin_DataAccess\MesAdmin_DataAccess.csproj", "{BCAC5514-FFF1-4391-9045-E401C752B130}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{E246C678-A2F1-4E66-AFCE-7D24F3433F3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E246C678-A2F1-4E66-AFCE-7D24F3433F3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E246C678-A2F1-4E66-AFCE-7D24F3433F3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE58DCAF-9E8A-4436-A6D3-35F07774C32E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE58DCAF-9E8A-4436-A6D3-35F07774C32E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE58DCAF-9E8A-4436-A6D3-35F07774C32E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE58DCAF-9E8A-4436-A6D3-35F07774C32E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8CFDC2-21E3-47A8-AE2E-D39911E0B193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8CFDC2-21E3-47A8-AE2E-D39911E0B193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8CFDC2-21E3-47A8-AE2E-D39911E0B193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8CFDC2-21E3-47A8-AE2E-D39911E0B193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCAC5514-FFF1-4391-9045-E401C752B130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCAC5514-FFF1-4391-9045-E401C752B130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCAC5514-FFF1-4391-9045-E401C752B130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCAC5514-FFF1-4391-9045-E401C752B130}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
