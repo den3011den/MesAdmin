@@ -144,9 +144,24 @@ namespace MesAdmin_Business.Repository
             return _mapper.Map<IEnumerable<ProcessResourcesVM>, IEnumerable<ProcessResourcesVMDTO>>(ProcessResourcesVMFromDb);
         }
 
-        public async Task<ProcessResourcesVMDTO> UpdateResource(ProcessResourcesDTO objDTO)
+        public async Task<ProcessResourcesDTO> UpdateResource(ProcessResourcesDTO objDTO)
         {
-            throw new NotImplementedException();
+            if (objDTO != null)
+            {
+                var ProcessResourcesFromDb = _dbRPMData.ProcessResourcesDbSet.FirstOrDefault(u => u.ParentId == objDTO.ParentId && u.InsideId == objDTO.InsideId);
+                ProcessResourcesFromDb.ParentId = objDTO.ParentId;
+                ProcessResourcesFromDb.InsideId = objDTO.InsideId;
+                ProcessResourcesFromDb.Description = objDTO.Description;
+                ProcessResourcesFromDb.IsStorage = objDTO.IsStorage;
+                ProcessResourcesFromDb.ResourceName = objDTO.ResourceName;
+                ProcessResourcesFromDb.Department = objDTO.Department;
+                ProcessResourcesFromDb.IsProduction = objDTO.IsProduction;
+                //ProcessResourcesFromDb.EquipmentsData = objDTO.EquipmentsData;
+
+                await _dbRPMData.SaveChangesAsync();
+                return _mapper.Map<ProcessResources, ProcessResourcesDTO>(ProcessResourcesFromDb);
+            }
+            return new ProcessResourcesDTO();
         }
     }
 }

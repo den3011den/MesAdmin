@@ -17,7 +17,7 @@ namespace MesAdmin_Business.Repository.IRepository
 
         public Task<int> Delete(string ParentId, string InsideId);
 
-        public Task<ProcessResourcesVMDTO> UpdateResource(ProcessResourcesDTO objDTO);
+        public Task<ProcessResourcesDTO> UpdateResource(ProcessResourcesDTO objDTO);
 
         public Task<ProcessResourcesVMDTO> AddEquipment(string ParentId, string InsideId, Guid EquipGuid);
 
