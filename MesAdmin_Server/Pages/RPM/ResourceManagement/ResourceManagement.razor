@@ -46,8 +46,8 @@ else
 
 @code {
     public bool IsLoading { get; set; }
-    private int DeleteInsideId { get; set; } = 0;
-    private int DeleteParentId { get; set; } = 0;
+    private string DeleteInsideId { get; set; } = 0;
+    private string DeleteParentId { get; set; } = 0;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -91,7 +91,7 @@ else
 
 
 
-    private void HandleDelete(int parentId, int insideId)
+    private void HandleDelete(string parentId, string insideId)
     {
         DeleteInsideId = insideId;
         DeleteParentId = parentId;

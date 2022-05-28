@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MesAdmin_DataAccess.Data.RPMData;
+using MesAdmin_DataAccess.Data.RPMData.ViewModel;
 using MesAdmin_DataAccess.Data.SOADB;
 using MesAdmin_Models.ResourceManagementModels;
 using System;
@@ -16,6 +17,7 @@ namespace MesAdmin_Business.Mapper
         {
             CreateMap<Equipment, EquipmentDTO>().ReverseMap();
             CreateMap<ProcessResources, ProcessResourcesDTO>().ReverseMap();
+            CreateMap<ProcessResourcesVM, ProcessResourcesVMDTO>().ReverseMap();
         }
     }
 }
