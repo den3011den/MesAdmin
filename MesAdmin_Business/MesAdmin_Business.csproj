@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MesAdmin_Common\MesAdmin_Common.csproj" />
     <ProjectReference Include="..\MesAdmin_DataAccess\MesAdmin_DataAccess.csproj" />
     <ProjectReference Include="..\MesAdmin_Models\MesAdmin_Models.csproj" />
   </ItemGroup>

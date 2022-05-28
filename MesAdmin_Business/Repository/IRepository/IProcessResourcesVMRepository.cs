@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MesAdmin_Business.Repository.IRepository
 {
-    public interface IProcessResourcesVM
+    public interface IProcessResourcesVMRepository
     {                 
         public Task<ProcessResourcesVMDTO> Get(string ParentId, string InsideId);
 
