@@ -35,12 +35,34 @@ namespace MesAdmin_Business.Repository
 
         public async Task<ProcessResourcesVMDTO> Create(ProcessResourcesVMDTO objDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var obj = _mapper.Map<ProcessResourcesVMDTO, ProcessResourcesVM>(objDTO);
+                _dbRPMData.ProcessResourcesDbSet.Add(obj.ProcessResources);                 
+                await _dbRPMData.SaveChangesAsync();
+
+                return new ProcessResourcesVMDTO()
+                {
+                    ProcessResources = _mapper.Map<ProcessResources, ProcessResourcesDTO>(obj.ProcessResources),
+                    EquipmentsString = "",
+                    Equipments = _mapper.Map<IEnumerable<Equipment>, IEnumerable<EquipmentDTO>>(obj.Equipments).ToList()
+                };                
+            }
+            catch (Exception ex)
+            {
+                return new ProcessResourcesVMDTO();
+            }            
         }
 
         public async Task<int> Delete(string ParentId, string InsideId)
         {
-            throw new NotImplementedException();
+            var objProcessResourceFromDb = _dbRPMData.ProcessResourcesDbSet.FirstOrDefault(u => (u.ParentId == ParentId && u.InsideId == InsideId));                                 
+            if (objProcessResourceFromDb != null)
+            {
+                _dbRPMData.ProcessResourcesDbSet.Remove(objProcessResourceFromDb);                
+                return await _dbRPMData.SaveChangesAsync();
+            }
+            return 0;
         }
 
         public async Task<ProcessResourcesVMDTO> DeleteEquipment(string ParentId, string InsideId, Guid EquipGuid)
