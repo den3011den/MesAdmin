@@ -1,19 +1,95 @@
 ﻿@page "/RPM/ResourceManagement"
 
+@using MesAdmin_Models.ResourceManagementModels
+
 @inject IJSRuntime _jsRuntime
 
-@*@inject IProcessResourcesRepository _processResourcesRepository
+@inject IProcessResourcesRepository _processResourcesRepository
 @inject IEquipmentRepository _equipmentRepository
+@inject IProcessResourcesVMRepository _processResourcesVMRepository
+
 @inject NavigationManager _navigationManager
-*@
 
 <_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
 
 <PageTitle>RPM.ResourceManagement</PageTitle>
 
-<h3>ResourceManagement</h3>
 
-<div class="row">
+<div>
+    <h3>ResourceManagement</h3>
+
+    @*----------------------------------------------------- *@
+
+
+    @if (processResourcesVMDTOList.Count() > 0)
+    {
+        @*        <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
+    Data="@processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" RowExpand="RowExpand">
+    <Template Context="order">
+    <RadzenDataGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@processResourcesVMDTOList.Equipments" TItem="EquipmentDTO">
+    <Columns>
+    <RadzenDataGridColumn TItem="EquipmentDTO" Property="EquipmentId" Title="Код оборудования" />
+    <RadzenDataGridColumn TItem="EquipmentDTO" Property="S95Id" Title="Наименование s95Id" />
+    <RadzenDataGridColumn TItem="EquipmentDTO" Property="Description" Title="Описание" />
+    </Columns>
+    </RadzenDataGrid>
+    </Template>
+    <Columns>
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="InsideId" Title="Код ресурса" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="ParentId" Title="Customer" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="ResourceName" Title="Наименование ресурса" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="Description" Title="Описание" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="IsStorage" Title="Складской" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="IsProduction" Title="Производственный" />
+    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="Department" Title="Департамент" />
+    <RadzenDataGridColumn TItem="string" Property="EquipmentsString" Title="Оборудование Proficy" />
+    </Columns>
+    </RadzenDataGrid>*@
+
+    @*PageSize="10" AllowPaging="true"*@
+    @*    <h1>@processResourcesVMDTOList.Count()</h1>*@
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Simple" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" LogicalFilterOperator="LogicalFilterOperator.Or"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" SelectionMode="DataGridSelectionMode.Single" @bind-Value="@selectedPprocessResourcesVMDTO"
+                    AllowMultiColumnSorting="true" ShowMultiColumnSortingIndex="true">
+
+            <Columns>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.InsideId" Title="Код ресурса" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад">
+                    <Template Context="data">
+                        <RadzenCheckBox @bind-Value=data.ProcessResources.IsStorage Disabled="true" TriState="true" TValue="bool" />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsProduction" Title="Произв-ный">
+                    <Template Context="data">
+                        <RadzenCheckBox @bind-Value=data.ProcessResources.IsProduction Disabled="true" TriState="true" TValue="bool" />
+                    </Template>
+                </RadzenDataGridColumn>
+                @*<RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Department" Title="Департамент" />*@
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="EquipmentsString" Title="Оборудование Proficy" />
+            </Columns>
+        </RadzenDataGrid>
+    }
+    else
+    {
+        if (IsLoading)
+        {
+            //отображение gif загрузки
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+
+        }
+    }
+</div>
+
+
+
+@*----------------------------------------------------*@
+@*<div class="row">
     <button class="btn btn-success" @onclick="ToastrSuccess">Тест Toastr Успех</button>
     <button class="btn btn-danger" @onclick="ToastrError">Тест Toastr Ошибка</button>
 </div>
@@ -23,49 +99,65 @@
 <div class="row">
     <button class="btn btn-success" @onclick="SweetAlertSuccess">Тест SweetAlert Успех</button>
     <button class="btn btn-danger" @onclick="SweetAlertError">Тест SweetAlert Ошибка</button>
-</div>
+</div>*@
 
 @*<button class="btn btn-danger" @onclick="()=>HandleDelete(objCat.ParentId, objCat.InsideId)">Удалить</button>*@
 
-
-@if (IsLoading)
-{
-
-    //отображение gif загрузки
-    <div class="text-center">
-        <img src="/images/loading.gif">
-    </div>
-
-}
-else
-{
-    //нет записей
-    <p>Записей не найдено</p>
-}
-
-
 @code {
+
+    private IEnumerable<ProcessResourcesVMDTO> processResourcesVMDTOList { get; set; } = new List<ProcessResourcesVMDTO>();
+    IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;
+    //RadzenDataGrid<ProcessResourcesVMDTO> grid;
     public bool IsLoading { get; set; }
     private string DeleteInsideId { get; set; } = "";
     private string DeleteParentId { get; set; } = "";
+
+
+    //-----------------------------------------------------
+
+
+    /*    protected override void OnInitialized()
+            {
+            orders = dbContext.Orders.Include("Customer").Include("Employee").ToList();
+        }  */
+
+    void RowRender(RowRenderEventArgs<ProcessResourcesVMDTO> args)
+    {
+        args.Expandable = true;
+    }
+
+    void RowExpand(ProcessResourcesVMDTO processResourcesVMDTO)
+    {
+        if (processResourcesVMDTO.Equipments == null)
+        {
+            //processResourcesVMDTO.Equipments = await _processResourcesVMRepository.Get(processResourcesVMDTO.ProcessResources.ParentId, processResourcesVMDTO.ProcessResources.InsideId).Equipments;
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            /*здесь получаем данные списка ресурсов */
-            /* await LoadCategories(); */
+            await LoadAllProcessResources();
+            selectedPprocessResourcesVMDTO = processResourcesVMDTOList.Take(1).ToList();
+            /*grid.ExpandRow(processResourcesVMDTOList.FirstOrDefault());*/
+           // StateHasChanged();
         }
+
+        //base.OnAfterRender(firstRender);
     }
+
+
+    //----------------------------------------------------
 
     private async Task LoadAllProcessResources()
     {
         /* загурка данных */
-        /* IsLoading = true;
+        IsLoading = true;
         StateHasChanged();
-        Categories = await _categoryRepository.GetAll();
+        processResourcesVMDTOList = await _processResourcesVMRepository.GetAll();
         IsLoading = false;
-        StateHasChanged(); */
+        StateHasChanged();
     }
 
     private async Task ToastrSuccess()

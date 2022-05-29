@@ -30,9 +30,10 @@ namespace MesAdmin_DataAccess.Data.RPMData
 		[Required]
 		public string EquipmentsData { get; set; }
 
-		public string Department { get; set; }
+		public string? Department { get; set; }
 
 		public bool IsProduction { get; set; }
 
 	}
+
 }

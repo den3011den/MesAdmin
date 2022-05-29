@@ -21,6 +21,7 @@ builder.Services.AddDbContext<RPMDataÀpplicationDbContext>(options =>
 
 builder.Services.AddScoped<IProcessResourcesRepository, ProcessResourcesRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<IProcessResourcesVMRepository, ProcessResourcesVMRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

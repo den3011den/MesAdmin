@@ -14,5 +14,14 @@ namespace MesAdmin_DataAccess.Data.RPMData
 
         }
         public DbSet<ProcessResources> ProcessResourcesDbSet { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<ProcessResources>().HasKey(table => new {
+                table.InsideId,
+                table.ParentId
+            });
+        }
+
     }
 }

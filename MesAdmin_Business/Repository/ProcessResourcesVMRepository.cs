@@ -179,7 +179,7 @@ namespace MesAdmin_Business.Repository
                     if (equipmentFromDb != null)
                     {
                         equipmentListFromDb.Add(equipmentFromDb);
-                        processResourcesVM.EquipmentsString = processResourcesVM.EquipmentsString + (String.IsNullOrEmpty(equipmentFromDb.S95Id) ? "" : String.IsNullOrEmpty(equipmentFromDb.S95Id)) + Environment.NewLine;
+                        processResourcesVM.EquipmentsString = processResourcesVM.EquipmentsString + (String.IsNullOrEmpty(equipmentFromDb.S95Id) ? "" : equipmentFromDb.S95Id + Environment.NewLine);
                     }
                 }
                 processResourcesVM.Equipments = equipmentListFromDb;
