@@ -72,12 +72,12 @@
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" Width="100px"/>
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" Width="240px"/>
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" Width="240px"/>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад" Width="70px">
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад" Filterable="false" Width="70px">
                     <Template Context="data">
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsStorage Disabled="true" TriState="true" TValue="bool" />
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsProduction" Title="Произв" Width="80px">
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsProduction" Title="Произв" Filterable="false" Width="80px">
                     <Template Context="data">
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsProduction Disabled="true" TriState="true" TValue="bool" />
                     </Template>
