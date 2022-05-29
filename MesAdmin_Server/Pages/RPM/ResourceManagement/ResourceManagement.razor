@@ -15,8 +15,12 @@
 <PageTitle>RPM.ResourceManagement</PageTitle>
 
 
-<div>
-    <h3>ResourceManagement</h3>
+<div class="row mt-4">
+
+    <div class="col-6">
+        <h4 class="card-title text-primary">ResourceManagement</h4>
+    </div>
+    
 
     @*----------------------------------------------------- *@
 
@@ -48,28 +52,78 @@
 
     @*PageSize="10" AllowPaging="true"*@
     @*    <h1>@processResourcesVMDTOList.Count()</h1>*@
-        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Simple" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+    @*<RadzenListBox @bind-Value=@selectedEquipment Data=@ProcessResources.Equipments TextProperty="S95Id" ValueProperty="EquipmentId" Style="height:200px" Class="w-100" />*@
+    @*SelectionMode="DataGridSelectionMode.Single"
+    @bind-Value="@selectedPprocessResourcesVMDTO"
+    AllowMultiColumnSorting="true"
+    *@
+
+
+        <div class="row cols-6">
+                <a href="RPM/ResourceManagement" class="btn btn-primary form-control">+ Добавить новый ресурс</a>
+        </div>
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Simple" AllowSorting="true" AllowMultiColumnSorting="false" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" LogicalFilterOperator="LogicalFilterOperator.Or"
-                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" SelectionMode="DataGridSelectionMode.Single" @bind-Value="@selectedPprocessResourcesVMDTO"
-                    AllowMultiColumnSorting="true" ShowMultiColumnSortingIndex="true">
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    ShowMultiColumnSortingIndex="false" style="height: 700px">
 
             <Columns>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.InsideId" Title="Код ресурса" />
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" />
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" />
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" />
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад">
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.InsideId" Title="Код ресурса" Width="100px"/>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" Width="100px"/>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" Width="240px"/>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" Width="240px"/>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад" Width="70px">
                     <Template Context="data">
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsStorage Disabled="true" TriState="true" TValue="bool" />
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsProduction" Title="Произв-ный">
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsProduction" Title="Произв" Width="80px">
                     <Template Context="data">
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsProduction Disabled="true" TriState="true" TValue="bool" />
                     </Template>
                 </RadzenDataGridColumn>
                 @*<RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Department" Title="Департамент" />*@
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="EquipmentsString" Title="Оборудование Proficy" />
+                @*<RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="EquipmentsString" Title="Оборудование Proficy" />*@
+                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="Оборудование Proficy" Property="ProcessResources.EquipmentsString" Width="340px">
+                    <Template Context="data">
+                         @if (data.Equipments.Any())
+                            {
+                                <table class="table" style="table-layout: fixed;">
+@*                                    <thead>
+                                        <tr>
+                                            <th>Наименование</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>*@
+                                    <tbody>
+                                        @foreach (var objEquip in data.Equipments)
+                                        {
+                                            <tr>                                                
+                                                <td style="width: 300px; font-size:12px">
+                                                    @objEquip.S95Id
+                                                </td>
+                                                <td style="width: 35px; font-size:12px">
+                                                    <button title="Удалить оборудование Proficy у ресурса" class="btn btn-danger" style="font-size:16px" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, objEquip.EquipmentId)"> - </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                    </Template>
+                </RadzenDataGridColumn>
+                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="Действия" Sortable="false" Width="130px">
+                     <Template Context="data">
+                     <button title="Добавить оборудование к ресурсу" class="btn btn-primary" style="font-size:16px" @onclick="()=>HandleAddEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"> + </button>
+                     <button title="Удалить ресурс" class="btn btn-danger" style="font-size:12px" @onclick="()=>HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId)">Удалить</button>
+                     </Template>
+@*                    <Template Context="data">
+                        <RadzenButton Click="(args => HandleAddEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId))" Text="Добавить оборудование" ButtonStyle="ButtonStyle.Success"></RadzenButton>
+                    </Template>
+*@@*                    <Template Context="data">
+                        <RadzenButton Click="(args => HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId))" Text="Удалить" ButtonStyle="ButtonStyle.Danger"></RadzenButton>
+                    </Template>*@
+                </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
     }
@@ -106,11 +160,12 @@
 @code {
 
     private IEnumerable<ProcessResourcesVMDTO> processResourcesVMDTOList { get; set; } = new List<ProcessResourcesVMDTO>();
-    IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;
+    IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;    
     //RadzenDataGrid<ProcessResourcesVMDTO> grid;
     public bool IsLoading { get; set; }
     private string DeleteInsideId { get; set; } = "";
     private string DeleteParentId { get; set; } = "";
+    private Guid DeleteEquipmentId { get; set; } = Guid.Empty;
 
 
     //-----------------------------------------------------
@@ -141,7 +196,7 @@
             await LoadAllProcessResources();
             selectedPprocessResourcesVMDTO = processResourcesVMDTOList.Take(1).ToList();
             /*grid.ExpandRow(processResourcesVMDTOList.FirstOrDefault());*/
-           // StateHasChanged();
+            // StateHasChanged();
         }
 
         //base.OnAfterRender(firstRender);
@@ -188,6 +243,21 @@
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
+    }
+
+    private void HandleDeleteEquipment(string parentId, string insideId, Guid equipmentId)
+    {
+        DeleteInsideId = insideId;
+        DeleteParentId = parentId;
+        DeleteEquipmentId = equipmentId;
+        _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
+    }
+
+
+    private void HandleAddEquipment(string parentId, string insideId)
+    {
+        
+        
     }
 
     public async Task ConfirmDelete_Click(bool isConfirmed)
