@@ -8,7 +8,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                Удаление. Вы уверены?
+                @*Удаление. Вы уверены?*@
+                @DeleteConfirmationMessage
             </div>
             @if (IsParentComponentProcessing)
             {
@@ -44,6 +45,10 @@
 
     [Parameter]
     public EventCallback<bool> ConfirmationChanged { get; set; }
+
+    [Parameter]
+    public string DeleteConfirmationMessage { get; set; } = "";
+
     private async Task OnConfirmationDelete(bool value)
     {
         if (value)

@@ -10,7 +10,7 @@
 
 @inject NavigationManager _navigationManager
 
-<_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
+<_DeleteConfirmation IsParentComponentProcessing="IsLoading" DeleteConfirmationMessage="@DeleteMessage" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
 
 <PageTitle>RPM.ResourceManagement</PageTitle>
 
@@ -92,8 +92,9 @@
             <Columns>
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="" Sortable="false" Width="60px" Filterable="false">
                      <Template Context="data">
-                         <div class="container"> 
-                            <RadzenIcon Icon="delete_forever" title=@($"Удалить ресурс {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") style="font-size:18px;cursor: pointer;" @onclick="()=>HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"></RadzenIcon>
+                         <div class="container">                              
+                            <RadzenIcon Icon="delete_forever" title=@($"Удалить ресурс {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") style="font-size:18px;cursor: pointer;"
+                                    @onclick="()=>HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"></RadzenIcon>
                         </div>
                      </Template>
 @*                    <Template Context="data">
@@ -130,7 +131,7 @@
                                         <div class="container">                                                                                       
                                             <div class="row">                                 
                                                 <div class="col-lg-0 p-0" style="width: 10%; cursor: pointer;">
-                                                    <RadzenIcon Icon="delete_forever" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId)" title=@($"Удалить оборудование Proficy из ресурса {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}")/>
+                                                    <RadzenIcon Icon="delete_forever" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId, data2.S95Id)" title=@($"Удалить оборудование Proficy из ресурса {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}")/>
                                                 </div>
                                                 @*<button title="Удалить оборудование Proficy из ресурса SAP" class="btn btn-danger" style="width: 20px; font-size:10px" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId)"></button>*@
                                                 <div class="col-lg-0 p-0" style="width: 70%;">
@@ -182,6 +183,7 @@
     IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;    
     //RadzenDataGrid<ProcessResourcesVMDTO> grid;
     public bool IsLoading { get; set; }
+    public string DeleteMessage { get; set; } = "";
     private string DeleteInsideId { get; set; } = "";
     private string DeleteParentId { get; set; } = "";
     private Guid DeleteEquipmentId { get; set; } = Guid.Empty;
@@ -261,36 +263,40 @@
     {
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
+        DeleteMessage = "Удалить ресурс " + insideId + " | " + parentId +" ?";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
-    private void HandleDeleteEquipment(string parentId, string insideId, Guid equipmentId)
+    private void HandleDeleteEquipment(string parentId, string insideId, Guid equipmentId, string s95name)
     {
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
         DeleteEquipmentId = equipmentId;
+        DeleteMessage = "Удалить оборудование '" + s95name + "' из ресурса " + insideId + " | " + parentId +" ?";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
 
     private void HandleAddEquipment(string parentId, string insideId)
     {
-        
-        
+
+
     }
 
     public async Task ConfirmDelete_Click(bool isConfirmed)
     {
         IsLoading = true;
         // здесь код удаления
-        /* if (isConfirmed && DeleteCategoryId != 0)
-         {
-             await Task.Delay(5000);
-             //delete
-             await _categoryRepository.Delete(DeleteCategoryId);
-             await LoadCategories();
-             await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
-         } */
+        /*if (isConfirmed && DeleteCategoryId != 0)*/
+        if (isConfirmed)
+        {
+            /*await Task.Delay(5000);*/
+            //delete
+            /*await _categoryRepository.Delete(DeleteCategoryId);
+            await LoadCategories(); */
+            await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+        }
+        DeleteMessage = "";
         IsLoading = false;
     }
 
