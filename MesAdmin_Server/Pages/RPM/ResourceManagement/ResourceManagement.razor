@@ -184,9 +184,11 @@
     //RadzenDataGrid<ProcessResourcesVMDTO> grid;
     public bool IsLoading { get; set; }
     public string DeleteMessage { get; set; } = "";
+    public string DeleteMode { get; set; } = "Resource";
     private string DeleteInsideId { get; set; } = "";
     private string DeleteParentId { get; set; } = "";
     private Guid DeleteEquipmentId { get; set; } = Guid.Empty;
+    private string DeleteEquipmentName { get; set; } = "";
 
 
     //-----------------------------------------------------
@@ -236,27 +238,25 @@
         StateHasChanged();
     }
 
-    private async Task ToastrSuccess()
+    private async Task ToastrSuccess(string messStr)
     {
-        await _jsRuntime.ToastrSuccess("Операция выполнена успешно");
+        await _jsRuntime.ToastrSuccess(messStr);
     }
 
-    private async Task ToastrError()
+    private async Task ToastrError(string messStr)
     {
-        await _jsRuntime.ToastrError("При выполнении операции произошла ошибка");
+        await _jsRuntime.ToastrError(messStr);
     }
 
-    private async Task SweetAlertSuccess()
+    private async Task SweetAlertSuccess(string messStr)
     {
-        await _jsRuntime.InvokeVoidAsync("ShowSwal", "success", "Задача выполнена успешно");
+        await _jsRuntime.InvokeVoidAsync("ShowSwal", "success", messStr);
     }
 
-    private async Task SweetAlertError()
+    private async Task SweetAlertError(string messStr)
     {
-        await _jsRuntime.InvokeVoidAsync("ShowSwal", "error", "Ошибка при выполнении задачи");
+        await _jsRuntime.InvokeVoidAsync("ShowSwal", messStr);
     }
-
-
 
 
     private void HandleDelete(string parentId, string insideId)
@@ -264,6 +264,7 @@
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
         DeleteMessage = "Удалить ресурс " + insideId + " | " + parentId +" ?";
+        DeleteMode = "Resource";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
@@ -272,6 +273,8 @@
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
         DeleteEquipmentId = equipmentId;
+        DeleteEquipmentName = s95name;
+        DeleteMode = "Equipment";
         DeleteMessage = "Удалить оборудование '" + s95name + "' из ресурса " + insideId + " | " + parentId +" ?";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
@@ -283,7 +286,8 @@
 
     }
 
-    public async Task ConfirmDelete_Click(bool isConfirmed)
+
+    public async Task ConfirmDeleteEquipment_Click(bool isConfirmed)
     {
         IsLoading = true;
         // здесь код удаления
@@ -296,6 +300,65 @@
             await LoadCategories(); */
             await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
         }
+        DeleteMessage = "";
+        IsLoading = false;
+    }
+
+
+    public async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsLoading = true;
+        // здесь код удаления
+        /*if (isConfirmed && DeleteCategoryId != 0)*/
+
+        if (isConfirmed)
+        {
+            if (DeleteMode == "Resource")
+            {
+                if (String.IsNullOrEmpty(DeleteInsideId) || String.IsNullOrEmpty(DeleteParentId))
+                {
+                    await ToastrError("Код завода или код склада ресурса пусты!");
+                }
+                else
+                {
+                    int delCol = await _processResourcesVMRepository.Delete(DeleteParentId, DeleteInsideId);
+                    if (delCol > 0)
+                    {
+                        await ToastrSuccess("Ресурс " + DeleteInsideId + " | " + DeleteParentId + " успешно удалён");
+                    }
+                    else
+                    {
+                        await ToastrError("Ресурс " + DeleteInsideId + " | " + DeleteParentId + " не удалось удалить. Возможно уже отсутствует в базе данных.");
+                    }
+                }
+                await LoadAllProcessResources();
+            }
+            else if (DeleteMode == "Equipment")
+            {
+
+                if (String.IsNullOrEmpty(DeleteEquipmentId.ToString()))
+                {
+                    await ToastrError("Код оборудования пуст!");
+                }
+                else
+                {
+                    await _processResourcesVMRepository.DeleteEquipment(DeleteParentId, DeleteInsideId, DeleteEquipmentId);
+                    await ToastrSuccess("Оборудование '" + DeleteEquipmentName + "' удалено из ресурса " + DeleteInsideId + " | " + DeleteParentId);
+                }
+                await LoadAllProcessResources();
+            }
+            else
+            {
+                    await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+                    DeleteMessage = "";
+                    IsLoading = false;
+
+                    await SweetAlertError("Не поддерживаемый режим удаления DeleteMode = '" +DeleteMode + "'!");
+                    return;
+            }
+            
+        }
+        await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
         DeleteMessage = "";
         IsLoading = false;
     }
