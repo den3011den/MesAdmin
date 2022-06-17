@@ -27,6 +27,8 @@ namespace MesAdmin_Models.ResourceManagementModels
         [Display(Name = "Версия")]
         public long? Version { get; set; }
 
+        public Guid? ParentEquipmentId { get; set; }
+
         [Display(Name = "Родитель")]
         public EquipmentDTO ParentEquipment { get; set; }
     }

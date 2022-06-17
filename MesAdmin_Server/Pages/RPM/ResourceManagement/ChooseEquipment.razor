@@ -1,0 +1,182 @@
+﻿@page "/RPM/AddEquipmentToRecourse/{parameter1}/{parameter2}"
+
+@using MesAdmin_Models.ResourceManagementModels
+
+@inject IJSRuntime _jsRuntime
+
+@inject IProcessResourcesRepository _processResourcesRepository
+@inject IEquipmentRepository _equipmentRepository
+@inject IProcessResourcesVMRepository _processResourcesVMRepository
+
+@inject NavigationManager _navigationManager
+
+
+<PageTitle>Выбор ресурса для ресурса @Parameter1 | @Parameter2</PageTitle>
+
+
+<div class="row mt-4">
+
+    @*----------------------------------------------------- *@
+
+
+    @if (EquipmentDTOList.Count() > 0)
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <RadzenCard Style="width: 700px">
+                    <h4>Выберите элементы оборудования для добавления к ресурсу @Parameter1 | @Parameter2</h4>
+                    @*<p class="mb-3">Data from a single self-referencing table.</p>*@
+                    <RadzenTree Data=@RootEquipmentDTOList Expand=@LoadChildren AllowCheckBoxes="true"
+                            AllowCheckChildren="false" AllowCheckParents="true" @bind-CheckedValues=@CheckedValues Style="height: 600px">
+                        <RadzenTreeLevel Text=@GetText />
+                    </RadzenTree>
+
+
+                    @*<RadzenIcon Icon="delete_forever" title="Сохранить" style="font-size:18px;cursor: pointer;"
+                @onclick="()=>HandleClick()"></RadzenIcon>*@
+                </RadzenCard>
+
+                <div class="row mb-4 ml-5 p-5">
+                    <div class="col">
+                        <RadzenButton Click=@(args => OnClickAdd()) Text="Добавить" ButtonStyle="ButtonStyle.Primary" />
+                        <RadzenButton Click=@(args => OnClickCancel()) Text="Отмена" ButtonStyle="ButtonStyle.Light" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    }
+    else
+    {
+        if (IsLoading)
+        {
+            //отображение gif загрузки
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+
+        }
+    }
+</div>
+
+
+
+
+@code {
+
+
+    [Parameter]
+    public string Parameter1 { get; set; }
+    [Parameter]
+    public string Parameter2 { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    IEnumerable<EquipmentDTO> EquipmentDTOList { get; set; } = new List<EquipmentDTO>();
+    IEnumerable<EquipmentDTO> RootEquipmentDTOList { get; set; } = new List<EquipmentDTO>();
+
+    public IEnumerable<object> CheckedValues { get; set; } = new List<object>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            IsLoading = true;
+            StateHasChanged();
+
+            EquipmentDTOList = await _equipmentRepository.GetAll();
+            RootEquipmentDTOList = EquipmentDTOList.Where(entry => entry.ParentEquipmentId == null);
+
+            IsLoading = false;
+            StateHasChanged();
+        }
+
+        //base.OnAfterRender(firstRender);
+    }
+
+
+    string GetText(object data)
+    {
+        return (data as EquipmentDTO).S95Id;
+    }
+
+
+    bool CheckChildren(object data)
+    {
+
+        return EquipmentDTOList.Where(eee => eee.ParentEquipmentId == (data as EquipmentDTO).EquipmentId).Any();
+    }
+
+    //----------------------------------------------------
+
+    void LoadChildren(TreeExpandEventArgs args)
+    {
+        var rootNode = args.Value as EquipmentDTO;
+        var dataList = EquipmentDTOList.Where(entry => entry.ParentEquipmentId == rootNode.EquipmentId);
+        args.Children.Data = dataList;
+        args.Children.Text = GetText;
+        args.Children.HasChildren = CheckChildren;
+    }
+
+    private async Task ToastrSuccess(string messStr)
+    {
+        await _jsRuntime.ToastrSuccess(messStr);
+    }
+
+    private async Task ToastrError(string messStr)
+    {
+        await _jsRuntime.ToastrError(messStr);
+    }
+
+    private async Task OnClickAdd()
+    {
+
+        if (CheckedValues.Count() <= 0)
+        {
+            await _jsRuntime.ToastrError("Не выбрано оборудования для добавления");
+            return;
+        }
+
+        ProcessResourcesVMDTO currentResource = await _processResourcesVMRepository.Get(Parameter1, Parameter2);
+
+        if (currentResource == null)
+        {
+            await _jsRuntime.ToastrError("Не удалось найти ресурс " + Parameter1 + " | " + Parameter2);
+            return;
+        }
+
+
+        foreach (var item in CheckedValues)
+        {
+            EquipmentDTO currItem = (item as EquipmentDTO);
+            var getEquip = currentResource.Equipments.FirstOrDefault(a => a.EquipmentId == currItem.EquipmentId);
+            if (getEquip != null)
+            {
+                await _jsRuntime.ToastrError("Оборудование " + currItem.S95Id + " (" + currItem.EquipmentId.ToString() + ") уже есть в ресурсе " + Parameter2 + " | " + Parameter1);
+                return;
+            }
+
+        }
+
+        foreach (var item in CheckedValues)
+        {
+            EquipmentDTO currItem = (item as EquipmentDTO);
+            await _processResourcesVMRepository.AddEquipment(Parameter1, Parameter2, currItem.EquipmentId);
+        }
+
+        _navigationManager.NavigateTo("RPM/ResourceManagement");
+        await _jsRuntime.ToastrSuccess("К ресурсу " + Parameter2 + " | " + Parameter1 + " добавлено " + CheckedValues.Count().ToString() + " единиц оборудования");
+
+    }
+
+    private async Task OnClickCancel()
+    {
+        _navigationManager.NavigateTo("RPM/ResourceManagement");
+    }
+
+
+}

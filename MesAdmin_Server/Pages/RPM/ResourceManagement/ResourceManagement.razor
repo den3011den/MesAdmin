@@ -20,69 +20,16 @@
     <div class="col-6">
         <h4 class="card-title text-primary">ResourceManagement</h4>
     </div>
-    
+
 
     @*----------------------------------------------------- *@
 
 
     @if (processResourcesVMDTOList.Count() > 0)
     {
-        @*        <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
-    Data="@processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" RowExpand="RowExpand">
-    <Template Context="order">
-    <RadzenDataGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@processResourcesVMDTOList.Equipments" TItem="EquipmentDTO">
-    <Columns>
-    <RadzenDataGridColumn TItem="EquipmentDTO" Property="EquipmentId" Title="Код оборудования" />
-    <RadzenDataGridColumn TItem="EquipmentDTO" Property="S95Id" Title="Наименование s95Id" />
-    <RadzenDataGridColumn TItem="EquipmentDTO" Property="Description" Title="Описание" />
-    </Columns>
-    </RadzenDataGrid>
-    </Template>
-    <Columns>
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="InsideId" Title="Код ресурса" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="ParentId" Title="Customer" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="ResourceName" Title="Наименование ресурса" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="Description" Title="Описание" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="IsStorage" Title="Складской" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="IsProduction" Title="Производственный" />
-    <RadzenDataGridColumn TItem="ProcessResourcesDTO" Property="Department" Title="Департамент" />
-    <RadzenDataGridColumn TItem="string" Property="EquipmentsString" Title="Оборудование Proficy" />
-    </Columns>
-    </RadzenDataGrid>*@
-
-    @*PageSize="10" AllowPaging="true"*@
-    @*    <h1>@processResourcesVMDTOList.Count()</h1>*@
-    @*<RadzenListBox @bind-Value=@selectedEquipment Data=@ProcessResources.Equipments TextProperty="S95Id" ValueProperty="EquipmentId" Style="height:200px" Class="w-100" />*@
-    @*SelectionMode="DataGridSelectionMode.Single"
-    @bind-Value="@selectedPprocessResourcesVMDTO"
-    AllowMultiColumnSorting="true"
-    *@
-
-
-    @*                         @if (data.Equipments.Any())
-                            {
-                                <table class="table" style="table-layout: fixed;">
-                                    <tbody>
-                                        @foreach (var objEquip in data.Equipments)
-                                        {
-                                            <tr>                                                
-                                                <td style="width: 300px; font-size:12px">
-                                                    @objEquip.S95Id
-                                                </td>
-                                                <td style="width: 35px; font-size:12px">
-                                                    <button title="Удалить оборудование Proficy у ресурса" class="btn btn-danger" style="font-size:16px" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, objEquip.EquipmentId)"> - </button>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            }*@
-
-
-
 
         <div class="row cols-6">
-                <a href="RPM/ResourceManagement" class="btn btn-primary form-control">+ Добавить новый ресурс</a>
+            <a href="RPM/ResourceManagement" class="btn btn-primary form-control">+ Добавить новый ресурс</a>
         </div>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Simple" AllowSorting="true" AllowMultiColumnSorting="false" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" LogicalFilterOperator="LogicalFilterOperator.Or"
@@ -91,25 +38,19 @@
 
             <Columns>
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="" Sortable="false" Width="60px" Filterable="false">
-                     <Template Context="data">
-                         <div class="container">                              
+                    <Template Context="data">
+                        <div class="container">
                             <RadzenIcon Icon="delete_forever" title=@($"Удалить ресурс {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") style="font-size:18px;cursor: pointer;"
                                     @onclick="()=>HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"></RadzenIcon>
                         </div>
-                     </Template>
-@*                    <Template Context="data">
-                        <RadzenButton Click="(args => HandleAddEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId))" Text="Добавить оборудование" ButtonStyle="ButtonStyle.Success"></RadzenButton>
                     </Template>
-*@@*                    <Template Context="data">
-                        <RadzenButton Click="(args => HandleDelete(data.ProcessResources.ParentId, data.ProcessResources.InsideId))" Text="Удалить" ButtonStyle="ButtonStyle.Danger"></RadzenButton>
-                    </Template>*@
                 </RadzenDataGridColumn>
 
 
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.InsideId" Title="Код ресурса" Width="100px"/>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" Width="100px"/>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" Width="240px"/>
-                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" Width="240px"/>
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.InsideId" Title="Код ресурса" Width="100px" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ParentId" Title="Код склада" Width="100px" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.ResourceName" Title="Наименование ресурса" Width="240px" />
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.Description" Title="Описание" Width="240px" />
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Property="ProcessResources.IsStorage" Title="Склад" Filterable="false" Width="70px">
                     <Template Context="data">
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsStorage Disabled="true" TriState="true" TValue="bool" />
@@ -120,28 +61,28 @@
                         <RadzenCheckBox @bind-Value=data.ProcessResources.IsProduction Disabled="true" TriState="true" TValue="bool" />
                     </Template>
                 </RadzenDataGridColumn>
-                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="Оборудование Proficy" Property="ProcessResources.EquipmentsString" Width="380px" Filterable="false" Sortable="false">
+                <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="Оборудование Proficy" Property="ProcessResources.EquipmentsString" Width="380px" Filterable="false" Sortable="false">
                     <Template Context="data">
-                          <div class="container"> 
-                                <button title=@($"Добавить оборудование Proficy ресурсу {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") class="btn btn-primary" style="width: 90%; padding: 0; overflow: hidden; font-size:14px" @onclick="()=>HandleAddEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"> +  Добавить оборудование </button>
-                          </div>
-                          <RadzenDataList WrapItems="false" AllowPaging="true" Data="data.Equipments" TItem="EquipmentDTO" PagerHorizontalAlign="HorizontalAlign.Left" PageSize="5" ShowPagingSummary="false">
-                              <Template Context="data2">                                  
-                                   <RadzenCard Style="width: 100%; padding: 0; overflow: hidden;">        
-                                        <div class="container">                                                                                       
-                                            <div class="row">                                 
-                                                <div class="col-lg-0 p-0" style="width: 10%; cursor: pointer;">
-                                                    <RadzenIcon Icon="delete_forever" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId, data2.S95Id)" title=@($"Удалить оборудование Proficy из ресурса {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}")/>
-                                                </div>
-                                                @*<button title="Удалить оборудование Proficy из ресурса SAP" class="btn btn-danger" style="width: 20px; font-size:10px" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId)"></button>*@
-                                                <div class="col-lg-0 p-0" style="width: 70%;">
-                                                    @(data2.S95Id)
-                                                </div>
+                        <div class="container">
+                            <button title=@($"Добавить оборудование Proficy ресурсу {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") class="btn btn-primary" style="width: 90%; padding: 0; overflow: hidden; font-size:14px" @onclick="()=>HandleAddEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId)"> +  Добавить оборудование </button>
+                        </div>
+                        <RadzenDataList WrapItems="false" AllowPaging="true" Data="data.Equipments" TItem="EquipmentDTO" PagerHorizontalAlign="HorizontalAlign.Left" PageSize="5" ShowPagingSummary="false">
+                            <Template Context="data2">
+                                <RadzenCard Style="width: 100%; padding: 0; overflow: hidden;">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-0 p-0" style="width: 10%; cursor: pointer;">
+                                                <RadzenIcon Icon="delete_forever" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId, data2.S95Id)" title=@($"Удалить оборудование Proficy из ресурса {data.ProcessResources.InsideId} | {data.ProcessResources.ParentId}") />
+                                            </div>
+                                            @*<button title="Удалить оборудование Proficy из ресурса SAP" class="btn btn-danger" style="width: 20px; font-size:10px" @onclick="()=>HandleDeleteEquipment(data.ProcessResources.ParentId, data.ProcessResources.InsideId, data2.EquipmentId)"></button>*@
+                                            <div class="col-lg-0 p-0" style="width: 70%;">
+                                                @(data2.S95Id)
                                             </div>
                                         </div>
+                                    </div>
                                 </RadzenCard>
-                              </Template>
-                          </RadzenDataList>
+                            </Template>
+                        </RadzenDataList>
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>
@@ -180,7 +121,7 @@
 @code {
 
     private IEnumerable<ProcessResourcesVMDTO> processResourcesVMDTOList { get; set; } = new List<ProcessResourcesVMDTO>();
-    IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;    
+    IList<ProcessResourcesVMDTO> selectedPprocessResourcesVMDTO;
     //RadzenDataGrid<ProcessResourcesVMDTO> grid;
     public bool IsLoading { get; set; }
     public string DeleteMessage { get; set; } = "";
@@ -263,7 +204,7 @@
     {
         DeleteInsideId = insideId;
         DeleteParentId = parentId;
-        DeleteMessage = "Удалить ресурс " + insideId + " | " + parentId +" ?";
+        DeleteMessage = "Удалить ресурс " + insideId + " | " + parentId + " ?";
         DeleteMode = "Resource";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
@@ -275,15 +216,30 @@
         DeleteEquipmentId = equipmentId;
         DeleteEquipmentName = s95name;
         DeleteMode = "Equipment";
-        DeleteMessage = "Удалить оборудование '" + s95name + "' из ресурса " + insideId + " | " + parentId +" ?";
+        DeleteMessage = "Удалить оборудование '" + s95name + "' из ресурса " + insideId + " | " + parentId + " ?";
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
 
-    private void HandleAddEquipment(string parentId, string insideId)
+    private async Task HandleAddEquipment(string parentId, string insideId)
     {
 
+        if (String.IsNullOrEmpty(parentId) || String.IsNullOrEmpty(insideId))
+        {
+            ToastrError("Код завода или код склада пустой").GetAwaiter();
+            return;
+        }
 
+        ProcessResourcesVMDTO resourceDTO = await _processResourcesVMRepository.Get(parentId, insideId);
+        //.GetAwaiter().GetResult();
+
+        if(resourceDTO == null)
+        {
+            ToastrError("Ресурс " + insideId + " | " + parentId + " не найден").GetAwaiter();
+            return;
+        }
+
+        _navigationManager.NavigateTo("RPM/AddEquipmentToRecourse/" + parentId + "/" + insideId);
     }
 
 
@@ -349,14 +305,14 @@
             }
             else
             {
-                    await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
-                    DeleteMessage = "";
-                    IsLoading = false;
+                await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+                DeleteMessage = "";
+                IsLoading = false;
 
-                    await SweetAlertError("Не поддерживаемый режим удаления DeleteMode = '" +DeleteMode + "'!");
-                    return;
+                await SweetAlertError("Не поддерживаемый режим удаления DeleteMode = '" + DeleteMode + "'!");
+                return;
             }
-            
+
         }
         await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
         DeleteMessage = "";
