@@ -31,12 +31,14 @@
     {
 
         <div class="row cols-6">
-            <a href="RPM/ResourceManagement" class="btn btn-primary form-control">+ Добавить новый ресурс</a>
+            <a @onclick="AddResource" class="btn btn-primary form-control">+ Добавить новый ресурс</a>
+            @*<RadzenButton Icon="add_circle_outline" class="btn btn-primary form-control" Text="+ Добавить новый ресурс" Click="@AddResource"/>*@
         </div>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Simple" AllowSorting="true" AllowMultiColumnSorting="false" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="processResourcesVMDTOList" TItem="ProcessResourcesVMDTO" LogicalFilterOperator="LogicalFilterOperator.Or"
                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    ShowMultiColumnSortingIndex="false" style="height: 750px">
+                    ShowMultiColumnSortingIndex="false" style="height: 750px"
+                    RowDoubleClick="@EditResource">
 
             <Columns>
                 <RadzenDataGridColumn TItem="ProcessResourcesVMDTO" Title="" Sortable="false" Width="60px" Filterable="false">
@@ -238,7 +240,7 @@
         ProcessResourcesVMDTO resourceDTO = await _processResourcesVMRepository.Get(parentId, insideId);
         //.GetAwaiter().GetResult();
 
-        if(resourceDTO == null)
+        if (resourceDTO == null)
         {
             ToastrError("Ресурс " + insideId + " | " + parentId + " не найден").GetAwaiter();
             IsLoading = false;
@@ -251,7 +253,7 @@
                                                { "Parameter2", insideId }},
             new DialogOptions() { Width = "650px", Height = "750px", ShowClose = true, Resizable = true, CloseDialogOnEsc = true });
 
-        if (dialogResult !=null)
+        if (dialogResult != null)
         {
             var processResourcesVMDTOListTmp = processResourcesVMDTOList.ToList();
             processResourcesVMDTOListTmp.RemoveAll(e => (e.ProcessResources.ParentId == parentId && e.ProcessResources.InsideId == insideId));
@@ -260,6 +262,8 @@
             IsLoading = false;
             this.StateHasChanged();
         }
+
+        IsLoading = false;
 
 
 
@@ -345,5 +349,43 @@
         IsLoading = false;
     }
 
+
+    protected async Task AddResource(MouseEventArgs args)
+    {
+
+        IsLoading = true;
+
+        var dialogResult = await _dialogService.OpenAsync<AddEditProcessResources>("Добавить ресурс", null);
+
+        if (dialogResult != null)
+        {
+            var processResourcesVMDTOListTmp = processResourcesVMDTOList.ToList();
+            processResourcesVMDTOListTmp.Add(dialogResult);
+            processResourcesVMDTOList = processResourcesVMDTOListTmp.OrderBy(e => e.ProcessResources.InsideId).ThenBy(e => e.ProcessResources.ParentId);
+            IsLoading = false;
+            this.StateHasChanged();
+        }
+
+        IsLoading = false;
+    }
+
+
+    protected async Task EditResource(DataGridRowMouseEventArgs<ProcessResourcesVMDTO> args)
+    {
+        var dialogResult = await _dialogService.OpenAsync<AddEditProcessResources>("Изменить ресурс ", new Dictionary<string, object>() { { "InsideId", args.Data.ProcessResources.InsideId }, { "ParentId", args.Data.ProcessResources.ParentId } });
+
+        if (dialogResult != null)
+        {
+            var processResourcesVMDTOListTmp = processResourcesVMDTOList.ToList();
+            processResourcesVMDTOListTmp.RemoveAll(e => (e.ProcessResources.ParentId == args.Data.ProcessResources.ParentId && e.ProcessResources.InsideId == args.Data.ProcessResources.InsideId));
+            processResourcesVMDTOListTmp.Add(dialogResult);
+            processResourcesVMDTOList = processResourcesVMDTOListTmp.OrderBy(e => e.ProcessResources.InsideId).ThenBy(e => e.ProcessResources.ParentId);
+            IsLoading = false;
+            this.StateHasChanged();
+        }
+
+        IsLoading = false;
+
+    }
 
 }

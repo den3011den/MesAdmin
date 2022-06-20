@@ -1,0 +1,175 @@
+﻿@page "/RPM/AddEditResourse/{parentid}/{insideid}"
+
+@using MesAdmin_Models.ResourceManagementModels
+
+@inject IJSRuntime _jsRuntime
+
+@inject IProcessResourcesRepository _processResourcesRepository
+@inject IProcessResourcesVMRepository _processResourcesVMRepository
+
+@inject NavigationManager _navigationManager
+
+@inject DialogService _dialogService
+
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">@Title ресурс SAP</h3>
+
+    <div class="col-md-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="ProcessResourcesDTOModel" OnValidSubmit="AddEditResource">
+                <DataAnnotationsValidator />
+                @*<ValidationSummary/>*@
+                <div class="form-group">
+                    <label>Код склада</label>
+                    <InputText @bind-Value="ProcessResourcesDTOModel.InsideId" class="form-control"></InputText>
+                    <ValidationMessage For="()=>ProcessResourcesDTOModel.InsideId"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Код завода</label>
+                    <InputText @bind-Value="ProcessResourcesDTOModel.ParentId" class="form-control"></InputText>
+                    <ValidationMessage For="()=>ProcessResourcesDTOModel.ParentId"></ValidationMessage>
+                </div>
+
+                <div class="form-group">
+                    <label>Наименование</label>
+                    <InputText @bind-Value="ProcessResourcesDTOModel.ResourceName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>ProcessResourcesDTOModel.ResourceName"></ValidationMessage>
+                </div>
+
+                <div class="form-group">
+                    <label>Описание</label>
+                    <InputText @bind-Value="ProcessResourcesDTOModel.Description" class="form-control"></InputText>                    
+                    <ValidationMessage For="()=>ProcessResourcesDTOModel.Description"></ValidationMessage>
+                </div>
+
+                <div class="row pt-3">
+                    <div class="form-group col-6">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="ProcessResourcesDTOModel.IsStorage" class="form-check-input"></InputCheckbox>
+                            <label class="form-check-label">Склад</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="ProcessResourcesDTOModel.IsProduction" class="form-check-input"></InputCheckbox>
+                            <label class="form-check-label">Производственный</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">@Title</button>
+                    <NavLink @onclick="(() => OnClickCancel())" class="btn btn-secondary">Назад к списку</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string parentid { get; set; }
+
+    [Parameter]
+    public string insideid { get; set; }
+
+    private string Oldparentid { get; set; }
+    private string Oldinsideid { get; set; }
+
+    private ProcessResourcesDTO ProcessResourcesDTOModel { get; set; } = new ProcessResourcesDTO();
+    private string Title { get; set; } = "Создать";
+
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            Oldparentid = parentid;
+            Oldinsideid = insideid;
+
+            if (String.IsNullOrEmpty(parentid) || String.IsNullOrEmpty(insideid))
+            { // создание
+                Title = "Создать";
+                IsLoading = false;
+            }
+            else
+            { // редактирование
+                Title = "Изменить";
+                await LoadProcessResource();
+            }
+        }
+    }
+
+    private async Task LoadProcessResource()
+    {
+
+        IsLoading = true;
+        StateHasChanged();
+        ProcessResourcesDTOModel = await _processResourcesRepository.Get(insideid, parentid);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task AddEditResource()
+    {
+
+        if (String.IsNullOrEmpty(Oldparentid) || String.IsNullOrEmpty(Oldinsideid))
+        {  // создание
+
+            var foundResource = await _processResourcesRepository.Get(ProcessResourcesDTOModel.InsideId, ProcessResourcesDTOModel.ParentId);
+
+            if (foundResource.ParentId != null && foundResource.InsideId != null)
+            {
+                await _jsRuntime.ToastrError("Ресурс " + ProcessResourcesDTOModel.InsideId + " | " + ProcessResourcesDTOModel.ParentId + " уже существует");
+                return;
+            }
+
+            ProcessResourcesDTOModel.EquipmentsData = "";
+
+            await _processResourcesRepository.Create(ProcessResourcesDTOModel);
+
+            var ResourceVMDTO = await _processResourcesVMRepository.Get(ProcessResourcesDTOModel.ParentId, ProcessResourcesDTOModel.InsideId);
+            await _jsRuntime.ToastrSuccess("Ресурс " + ProcessResourcesDTOModel.InsideId + " | " + ProcessResourcesDTOModel.ParentId + " успешно создан");
+            _dialogService.Close(ResourceVMDTO);
+        }
+        else
+        { // редактирование
+
+            if (ProcessResourcesDTOModel.InsideId != Oldinsideid || ProcessResourcesDTOModel.ParentId != Oldparentid)
+            {
+
+                var foundResource = await _processResourcesRepository.Get(ProcessResourcesDTOModel.InsideId, ProcessResourcesDTOModel.ParentId);
+
+                if (foundResource.ParentId != null && foundResource.InsideId != null)
+                {
+                    await _jsRuntime.ToastrError("Ресурс " + ProcessResourcesDTOModel.InsideId + " | " + ProcessResourcesDTOModel.ParentId + " уже существует");
+                    return;
+                }
+
+            }
+
+            await _processResourcesRepository.Update(ProcessResourcesDTOModel);
+
+            ProcessResourcesVMDTO ResourceVMDTO = await _processResourcesVMRepository.Get(ProcessResourcesDTOModel.ParentId, ProcessResourcesDTOModel.InsideId);
+            await _jsRuntime.ToastrSuccess("Ресурс " + ProcessResourcesDTOModel.InsideId + " | " + ProcessResourcesDTOModel.ParentId + " успешно изменён");
+
+            _dialogService.Close(ResourceVMDTO);
+        }
+    }
+
+    private async Task OnClickCancel()
+    {
+        _dialogService.Close(null);
+    }
+}
