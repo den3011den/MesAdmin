@@ -10,9 +10,9 @@
 
 @inject NavigationManager _navigationManager
 
+@inject DialogService _dialogService
 
-<PageTitle>Выбор ресурса для ресурса @Parameter1 | @Parameter2</PageTitle>
-
+@*<PageTitle>Выбор ресурса для ресурса @Parameter1 | @Parameter2</PageTitle>*@
 
 <div class="row mt-4">
 
@@ -23,26 +23,36 @@
     {
         <div class="row">
             <div class="col-md-4">
-                <RadzenCard Style="width: 700px">
+                <RadzenCard Style="width: 600px">
                     <h4>Выберите элементы оборудования для добавления к ресурсу @Parameter1 | @Parameter2</h4>
                     @*<p class="mb-3">Data from a single self-referencing table.</p>*@
                     <RadzenTree Data=@RootEquipmentDTOList Expand=@LoadChildren AllowCheckBoxes="true"
-                            AllowCheckChildren="false" AllowCheckParents="true" @bind-CheckedValues=@CheckedValues Style="height: 600px">
+                            AllowCheckChildren="false" AllowCheckParents="true" @bind-CheckedValues=@CheckedValues Style="height: 400px">
                         <RadzenTreeLevel Text=@GetText />
                     </RadzenTree>
 
 
                     @*<RadzenIcon Icon="delete_forever" title="Сохранить" style="font-size:18px;cursor: pointer;"
                 @onclick="()=>HandleClick()"></RadzenIcon>*@
-                </RadzenCard>
 
-                <div class="row mb-4 ml-5 p-5">
-                    <div class="col">
+                    <div class="row">
                         <RadzenButton Click=@(args => OnClickAdd()) Text="Добавить" ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Click=@(args => OnClickCancel()) Text="Отмена" ButtonStyle="ButtonStyle.Light" />
                     </div>
-                </div>
+                </RadzenCard>
 
+
+
+
+                @*                        <div class="row">
+            <div class="col-md-4">
+            <RadzenButton Click=@(args => OnClickAdd()) Text="Добавить" ButtonStyle="ButtonStyle.Primary" />
+            </div>
+            <div class="col-12">
+            <RadzenButton Click=@(args => OnClickCancel()) Text="Отмена" ButtonStyle="ButtonStyle.Light" />
+            </div>
+            </div>
+            *@
             </div>
         </div>
 
@@ -60,6 +70,7 @@
         }
     }
 </div>
+
 
 
 
@@ -165,17 +176,23 @@
         foreach (var item in CheckedValues)
         {
             EquipmentDTO currItem = (item as EquipmentDTO);
-            await _processResourcesVMRepository.AddEquipment(Parameter1, Parameter2, currItem.EquipmentId);
+            var PrResVMDTO = await _processResourcesVMRepository.AddEquipment(Parameter1, Parameter2, currItem.EquipmentId);
+
         }
 
-        _navigationManager.NavigateTo("RPM/ResourceManagement");
+        ProcessResourcesVMDTO newCurResource = await _processResourcesVMRepository.Get(Parameter1, Parameter2);
+        _dialogService.Close(newCurResource);
         await _jsRuntime.ToastrSuccess("К ресурсу " + Parameter2 + " | " + Parameter1 + " добавлено " + CheckedValues.Count().ToString() + " единиц оборудования");
+
+        
+        //_navigationManager.NavigateTo("RPM/ResourceManagement");
+        
 
     }
 
     private async Task OnClickCancel()
     {
-        _navigationManager.NavigateTo("RPM/ResourceManagement");
+        _dialogService.Close(null);
     }
 
 

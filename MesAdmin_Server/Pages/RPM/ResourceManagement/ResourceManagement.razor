@@ -10,6 +10,8 @@
 
 @inject NavigationManager _navigationManager
 
+@inject DialogService _dialogService
+
 <_DeleteConfirmation IsParentComponentProcessing="IsLoading" DeleteConfirmationMessage="@DeleteMessage" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
 
 <PageTitle>RPM.ResourceManagement</PageTitle>
@@ -131,7 +133,6 @@
     private Guid DeleteEquipmentId { get; set; } = Guid.Empty;
     private string DeleteEquipmentName { get; set; } = "";
 
-
     //-----------------------------------------------------
 
 
@@ -175,6 +176,7 @@
         IsLoading = true;
         StateHasChanged();
         processResourcesVMDTOList = await _processResourcesVMRepository.GetAll();
+        processResourcesVMDTOList.OrderBy(e => e.ProcessResources.InsideId).ThenBy(e => e.ProcessResources.ParentId);
         IsLoading = false;
         StateHasChanged();
     }
@@ -224,9 +226,12 @@
     private async Task HandleAddEquipment(string parentId, string insideId)
     {
 
+
+        IsLoading = true;
         if (String.IsNullOrEmpty(parentId) || String.IsNullOrEmpty(insideId))
         {
             ToastrError("Код завода или код склада пустой").GetAwaiter();
+            IsLoading = false;
             return;
         }
 
@@ -236,10 +241,31 @@
         if(resourceDTO == null)
         {
             ToastrError("Ресурс " + insideId + " | " + parentId + " не найден").GetAwaiter();
+            IsLoading = false;
             return;
         }
 
-        _navigationManager.NavigateTo("RPM/AddEquipmentToRecourse/" + parentId + "/" + insideId);
+
+        var dialogResult = await _dialogService.OpenAsync<ChooseEquipment>($"Добавить оборудование к ресурсу {insideId} | {parentId}",
+            new Dictionary<string, object>() { { "Parameter1", parentId },
+                                               { "Parameter2", insideId }},
+            new DialogOptions() { Width = "650px", Height = "750px", ShowClose = true, Resizable = true, CloseDialogOnEsc = true });
+
+        if (dialogResult !=null)
+        {
+            var processResourcesVMDTOListTmp = processResourcesVMDTOList.ToList();
+            processResourcesVMDTOListTmp.RemoveAll(e => (e.ProcessResources.ParentId == parentId && e.ProcessResources.InsideId == insideId));
+            processResourcesVMDTOListTmp.Add(dialogResult);
+            processResourcesVMDTOList = processResourcesVMDTOListTmp.OrderBy(e => e.ProcessResources.InsideId).ThenBy(e => e.ProcessResources.ParentId);
+            IsLoading = false;
+            this.StateHasChanged();
+        }
+
+
+
+        //InvokeAsync(StateHasChanged);
+
+        //_navigationManager.NavigateTo("RPM/AddEquipmentToRecourse/" + parentId + "/" + insideId);
     }
 
 

@@ -5,6 +5,7 @@ using MesAdmin_DataAccess.Data.SOADB;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddDbContext<RPMDataÀpplicationDbContext>(options =>
 builder.Services.AddScoped<IProcessResourcesRepository, ProcessResourcesRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IProcessResourcesVMRepository, ProcessResourcesVMRepository>();
+
+builder.Services.AddScoped<DialogService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
