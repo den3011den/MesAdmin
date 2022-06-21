@@ -159,7 +159,7 @@
 
             }
 
-            await _processResourcesRepository.Update(ProcessResourcesDTOModel);
+            await _processResourcesRepository.Update(ProcessResourcesDTOModel, Oldparentid, Oldinsideid);
 
             ProcessResourcesVMDTO ResourceVMDTO = await _processResourcesVMRepository.Get(ProcessResourcesDTOModel.ParentId, ProcessResourcesDTOModel.InsideId);
             await _jsRuntime.ToastrSuccess("Ресурс " + ProcessResourcesDTOModel.InsideId + " | " + ProcessResourcesDTOModel.ParentId + " успешно изменён");

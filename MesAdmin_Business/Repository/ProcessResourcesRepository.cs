@@ -58,22 +58,36 @@ namespace MesAdmin_Business.Repository
             return _mapper.Map<IEnumerable<ProcessResources>, IEnumerable<ProcessResourcesDTO>>(_db.ProcessResourcesDbSet);
         }
 
-        public async Task<ProcessResourcesDTO> Update(ProcessResourcesDTO objDTO)
+        public async Task<ProcessResourcesDTO> Update(ProcessResourcesDTO objDTO, string oldParentId, string oldInsideId)
         {
-            var objDromDb = await _db.ProcessResourcesDbSet.FirstOrDefaultAsync(u => ((u.InsideId.ToLower() == objDTO.InsideId.ToLower()) && (u.ParentId.ToLower() == objDTO.ParentId.ToLower())));
+            var objDromDb = await _db.ProcessResourcesDbSet.FirstOrDefaultAsync(u => ((u.InsideId.ToLower() == oldInsideId.ToLower()) && (u.ParentId.ToLower() == oldParentId.ToLower())));
+            
             if (objDromDb != null)
             {
-                objDromDb.InsideId = objDTO.InsideId;
-                objDromDb.ParentId = objDTO.ParentId;
-                objDromDb.Description = objDTO.Description;
-                objDromDb.IsStorage = objDTO.IsStorage;
-                objDromDb.ResourceName = objDTO.ResourceName;
-                objDromDb.EquipmentsData = objDTO.EquipmentsData;
-                objDromDb.Department = objDTO.Department;
-                objDromDb.IsProduction = objDTO.IsProduction;
-                _db.ProcessResourcesDbSet.Update(objDromDb);
-                _db.SaveChanges();
-                return _mapper.Map<ProcessResources, ProcessResourcesDTO>(objDromDb);
+
+                if (objDromDb.ParentId != objDTO.ParentId || objDromDb.InsideId != objDTO.InsideId)
+                {
+                    _db.ProcessResourcesDbSet.Remove(objDromDb);
+                    _db.SaveChanges();
+                    var newObj = _mapper.Map<ProcessResourcesDTO, ProcessResources>(objDTO);
+                    _db.ProcessResourcesDbSet.Add(newObj);
+                    _db.SaveChanges();
+                    return objDTO;
+                }
+                else
+                {
+                    objDromDb.InsideId = objDTO.InsideId;
+                    objDromDb.ParentId = objDTO.ParentId;
+                    objDromDb.Description = objDTO.Description;
+                    objDromDb.IsStorage = objDTO.IsStorage;
+                    objDromDb.ResourceName = objDTO.ResourceName;
+                    objDromDb.EquipmentsData = objDTO.EquipmentsData;
+                    objDromDb.Department = objDTO.Department;
+                    objDromDb.IsProduction = objDTO.IsProduction;
+                    _db.ProcessResourcesDbSet.Update(objDromDb);
+                    _db.SaveChanges();
+                    return _mapper.Map<ProcessResources, ProcessResourcesDTO>(objDromDb);
+                }                                                 
             }
             return objDTO;
         }

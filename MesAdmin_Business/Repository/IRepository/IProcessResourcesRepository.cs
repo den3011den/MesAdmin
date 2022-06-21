@@ -10,7 +10,7 @@ namespace MesAdmin_Business.Repository.IRepository
     public interface IProcessResourcesRepository
     {
         public Task<ProcessResourcesDTO> Create(ProcessResourcesDTO objDTO);
-        public Task<ProcessResourcesDTO> Update(ProcessResourcesDTO objDTO);
+        public Task<ProcessResourcesDTO> Update(ProcessResourcesDTO objDTO, string oldParentId, string oldInsideId);
         public Task<int> Delete(string InsideId, string ParentId);
         public Task<ProcessResourcesDTO> Get(string InsideId, string ParentId);
         public Task<IEnumerable<ProcessResourcesDTO>> GetAll();
