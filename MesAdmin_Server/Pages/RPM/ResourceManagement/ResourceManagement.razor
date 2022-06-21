@@ -107,22 +107,6 @@
 </div>
 
 
-
-@*----------------------------------------------------*@
-@*<div class="row">
-    <button class="btn btn-success" @onclick="ToastrSuccess">Тест Toastr Успех</button>
-    <button class="btn btn-danger" @onclick="ToastrError">Тест Toastr Ошибка</button>
-</div>
-
-<br />
-
-<div class="row">
-    <button class="btn btn-success" @onclick="SweetAlertSuccess">Тест SweetAlert Успех</button>
-    <button class="btn btn-danger" @onclick="SweetAlertError">Тест SweetAlert Ошибка</button>
-</div>*@
-
-@*<button class="btn btn-danger" @onclick="()=>HandleDelete(objCat.ParentId, objCat.InsideId)">Удалить</button>*@
-
 @code {
 
     private IEnumerable<ProcessResourcesVMDTO> processResourcesVMDTOList { get; set; } = new List<ProcessResourcesVMDTO>();
@@ -193,17 +177,6 @@
     {
         await _jsRuntime.ToastrError(messStr);
     }
-
-    private async Task SweetAlertSuccess(string messStr)
-    {
-        await _jsRuntime.InvokeVoidAsync("ShowSwal", "success", messStr);
-    }
-
-    private async Task SweetAlertError(string messStr)
-    {
-        await _jsRuntime.InvokeVoidAsync("ShowSwal", messStr);
-    }
-
 
     private void HandleDelete(string parentId, string insideId)
     {
@@ -340,7 +313,8 @@
                 DeleteMessage = "";
                 IsLoading = false;
 
-                await SweetAlertError("Не поддерживаемый режим удаления DeleteMode = '" + DeleteMode + "'!");
+                await ToastrError("Не поддерживаемый режим удаления DeleteMode = '" + DeleteMode + "'!");
+                
                 return;
             }
 
